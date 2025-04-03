@@ -126,7 +126,7 @@ export default function ServicesSection() {
             
             <CounterItem start={0} end={6} title="Years Of Experience" />
             <CounterItem start={0} end={300} title="Travel Packages" />
-            <CounterItem start={0} end={1000} title="Total Travelers" />
+            <CounterItem start={0} end={6000} title="Total Travelers" />
           </div>
         </section>
       </div>
