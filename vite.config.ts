@@ -5,7 +5,7 @@ import { componentTagger } from "lovable-tagger";
 
 export default defineConfig(({ mode }) => ({
   // Use GitHub Pages subpath only in production builds
-  base: mode === 'production' ? '/eid-positive-repl-web-push/' : '/',
+
   server: {
     host: "::",
     port: 8080,
