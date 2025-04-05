@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -14,6 +13,7 @@ import HotelReservationsPage from "./pages/services/HotelReservationsPage";
 import TourPackagesPage from "./pages/services/TourPackagesPage";
 import ContactPage from './pages/ContactPage';
 import DestinationPage from './pages/destinations/[region]';
+import WelcomeModal from "./components/WelcomeModal"; // Add this import
 
 const queryClient = new QueryClient();
 
@@ -24,6 +24,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <ScrollToTop />
+        <WelcomeModal /> {/* Add modal here */}
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/destinations" element={<DestinationsPage />} />
