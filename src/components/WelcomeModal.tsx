@@ -38,7 +38,7 @@ const WelcomeModal = () => {
             our full website - stay tuned for amazing travel experiences!
           </p>
           <button
-            className="mt-6 bg-black text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors"
+            className="mt-6 bg-black text-white px-6 py-2 rounded-md hover:bg-primary transition-colors"
             onClick={() => setIsVisible(false)}
           >
             Got it!
