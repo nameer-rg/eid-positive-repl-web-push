@@ -1,19 +1,33 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '../lib/supabaseClient';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (email.trim().toLowerCase() === 'nammus2008@gmail.com') {
-      localStorage.setItem('authenticated', 'true');
-      navigate('/dashboard'); // ✅ make sure this is lowercase
-    } else {
+    const allowedEmails = import.meta.env.VITE_ALLOWED_EMAILS?.split(',') || [];
+
+    if (!allowedEmails.includes(email.trim().toLowerCase())) {
       setError('❌ Access denied. This account is not allowed.');
+      return;
+    }
+
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: {
+        emailRedirectTo: `${window.location.origin}/dashboard`,
+      },
+    });
+
+    if (error) {
+      setError(error.message);
+    } else {
+      setError('✅ Check your inbox for the login link.');
     }
   };
 

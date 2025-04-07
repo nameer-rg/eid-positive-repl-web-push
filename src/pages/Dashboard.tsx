@@ -8,11 +8,20 @@ export default function Dashboard() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const isAuth = localStorage.getItem('authenticated') === 'true';
-    if (!isAuth) {
-      navigate('/login');
-      return;
-    }
+    const checkAuth = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      const user = session?.user;
+      const allowedEmail = 'nammus2008@gmail.com';
+
+      if (user?.email === allowedEmail || session) {
+        fetchTickets();
+      } else {
+        navigate('/login');
+      }
+    };
 
     const fetchTickets = async () => {
       const { data, error } = await supabase
@@ -25,11 +34,11 @@ export default function Dashboard() {
       setLoading(false);
     };
 
-    fetchTickets();
+    checkAuth();
   }, [navigate]);
 
-  const handleLogout = () => {
-    localStorage.removeItem('authenticated');
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     navigate('/login');
   };
 
