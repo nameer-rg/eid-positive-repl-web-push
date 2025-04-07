@@ -10,7 +10,7 @@ export default function Login() {
 
   const allowedEmails = import.meta.env.VITE_ALLOWED_EMAILS?.split(',') || [];
 
-  // ✅ Check session on page load (after magic link redirect)
+  // Check if a session exists (after magic link confirmation)
   useEffect(() => {
     const checkSession = async () => {
       const { data } = await supabase.auth.getSession();
@@ -22,15 +22,15 @@ export default function Login() {
           navigate('/dashboard');
         } else {
           setError('❌ This email is not authorized.');
-          await supabase.auth.signOut(); // Block unauthorized user
+          await supabase.auth.signOut(); // Sign out unauthorized user
         }
       }
     };
 
     checkSession();
-  }, [navigate]);
+  }, [navigate, allowedEmails]);
 
-  // ✅ Send Supabase Magic Link
+  // Send Supabase magic link with redirect to /dashboard
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -39,7 +39,8 @@ export default function Login() {
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: 'https://positive-travel-and-holidays.vercel.app/login',
+        emailRedirectTo:
+          'https://positive-travel-and-holidays.vercel.app/dashboard',
       },
     });
 
