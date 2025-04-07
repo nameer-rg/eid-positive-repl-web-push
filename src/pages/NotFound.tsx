@@ -1,6 +1,6 @@
 import { useLocation, Link } from "react-router-dom";
 import { useEffect } from "react";
-import MainLayout from "@/components/layouts/MainLayout";
+import FormLayout from "@/components/layouts/FormLayout";
 
 const NotFound = () => {
   const location = useLocation();
@@ -13,7 +13,7 @@ const NotFound = () => {
   }, [location.pathname]);
 
   return (
-    <MainLayout>
+    <FormLayout>
       <div className="min-h-screen flex items-center justify-center bg-black">
         <div className="text-center">
           <h1 className="text-4xl font-bold mb-4 text-white">404</h1>
@@ -23,7 +23,7 @@ const NotFound = () => {
           </Link>
         </div>
       </div>
-    </MainLayout>
+    </FormLayout>
   );
 };
 
