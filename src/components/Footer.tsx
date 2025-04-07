@@ -1,5 +1,6 @@
 
 import { MapPin, Phone, Mail, Instagram, MessageCircle, Facebook } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const socialInfo = [
   {
@@ -64,6 +65,16 @@ export default function Footer() {
           <div>
             <h3 className="text-2xl font-bold mb-4 uppercase font-brandonBold tracking-wider">Quick Links</h3>
             <ul className="space-y-2">
+
+              <li>
+                <Link 
+                  to="/support" 
+                  className="text-gray-400 hover:text-white transition-colors font-brandon tracking-wider text-lg"
+                >
+                  Customer Support
+                </Link>
+              </li>
+              
               <li><button onClick={() => scrollToSection('hero')} className="text-gray-400 hover:text-white transition-colors font-brandon tracking-wider text-lg">Home</button></li>
               <li><button onClick={() => scrollToSection('about')} className="text-gray-400 hover:text-white transition-colors font-brandon tracking-wider text-lg">About Us</button></li>
               <li><button onClick={() => scrollToSection('vision')} className="text-gray-400 hover:text-white transition-colors font-brandon tracking-wider text-lg">Our Vision</button></li>
