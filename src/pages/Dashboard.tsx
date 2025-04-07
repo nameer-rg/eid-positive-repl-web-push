@@ -3,49 +3,50 @@ import { supabase } from '../lib/supabaseClient';
 import { useNavigate } from 'react-router-dom';
 
 export default function Dashboard() {
-  const [tickets, setTickets] = useState([]);
+  const [tickets, setTickets] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // Function to log out and clear authentication
+  // Function to log out the user
   const handleLogout = async () => {
     await supabase.auth.signOut();
     localStorage.removeItem('authenticated');
     navigate('/login');
   };
 
-  // Check for session and fetch tickets
+  // Fetch tickets from Supabase
+  const fetchTickets = async () => {
+    const { data, error } = await supabase
+      .from('customer_service')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching tickets:', error.message);
+    } else {
+      setTickets(data || []);
+    }
+    setLoading(false);
+  };
+
+  // Check session on component mount
   useEffect(() => {
     const checkSession = async () => {
       const { data } = await supabase.auth.getSession();
       const user = data.session?.user;
-      const allowedEmail = 'nammus2008@gmail.com';
+      const allowedEmails = import.meta.env.VITE_ALLOWED_EMAILS?.split(',') || [];
 
       if (user) {
-        // If you want to allow multiple team emails,
-        // you can check against an array from environment variables.
-        if (user.email === allowedEmail) {
+        if (allowedEmails.includes(user.email)) {
           localStorage.setItem('authenticated', 'true');
           fetchTickets();
         } else {
-          // For unauthorized email
           await supabase.auth.signOut();
           navigate('/login');
         }
       } else {
         navigate('/login');
       }
-    };
-
-    const fetchTickets = async () => {
-      const { data, error } = await supabase
-        .from('customer_service')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) console.error('Error:', error.message);
-      else setTickets(data || []);
-      setLoading(false);
     };
 
     checkSession();
@@ -55,10 +56,27 @@ export default function Dashboard() {
   useEffect(() => {
     const timer = setTimeout(() => {
       handleLogout();
-    }, 10800000); // 3 hours in milliseconds
+    }, 10800000);
 
-    return () => clearTimeout(timer); // cleanup timer on unmount
+    return () => clearTimeout(timer);
   }, [navigate]);
+
+  // Delete a ticket by id
+  const deleteTicket = async (ticketId: string) => {
+    const { error } = await supabase
+      .from('customer_service')
+      .delete()
+      .eq('id', ticketId);
+
+    if (error) {
+      console.error('Error deleting ticket:', error.message);
+      alert('Failed to delete ticket.');
+    } else {
+      // Update local state after successful deletion
+      setTickets(tickets.filter((ticket) => ticket.id !== ticketId));
+      alert('Ticket deleted successfully.');
+    }
+  };
 
   return (
     <div className="p-6 max-w-3xl mx-auto">
@@ -78,12 +96,23 @@ export default function Dashboard() {
         <p>No tickets found.</p>
       ) : (
         <ul className="space-y-4">
-          {tickets.map((ticket, index) => (
-            <li key={index} className="p-4 border rounded bg-white shadow-sm">
-              <p><strong>Name:</strong> {ticket.name}</p>
-              <p><strong>Email:</strong> {ticket.email}</p>
-              <p><strong>Subject:</strong> {ticket.subject}</p>
-              <p><strong>Message:</strong> {ticket.message}</p>
+          {tickets.map((ticket) => (
+            <li
+              key={ticket.id}
+              className="p-4 border rounded bg-white shadow-sm flex flex-col md:flex-row md:items-center md:justify-between"
+            >
+              <div>
+                <p><strong>Name:</strong> {ticket.name}</p>
+                <p><strong>Email:</strong> {ticket.email}</p>
+                <p><strong>Subject:</strong> {ticket.subject}</p>
+                <p><strong>Message:</strong> {ticket.message}</p>
+              </div>
+              <button
+                onClick={() => deleteTicket(ticket.id)}
+                className="mt-2 md:mt-0 bg-red-500 text-white px-3 py-1 rounded"
+              >
+                Delete
+              </button>
             </li>
           ))}
         </ul>
