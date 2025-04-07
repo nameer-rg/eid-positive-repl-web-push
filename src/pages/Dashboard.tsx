@@ -34,7 +34,8 @@ export default function Dashboard() {
     const checkSession = async () => {
       const { data } = await supabase.auth.getSession();
       const user = data.session?.user;
-      const allowedEmails = import.meta.env.VITE_ALLOWED_EMAILS?.split(',') || [];
+      const allowedEmails =
+        import.meta.env.VITE_ALLOWED_EMAILS?.split(',') || [];
 
       if (user) {
         if (allowedEmails.includes(user.email)) {
@@ -61,8 +62,12 @@ export default function Dashboard() {
     return () => clearTimeout(timer);
   }, [navigate]);
 
-  // Delete a ticket by id
+  // Delete a ticket by id with confirmation prompt
   const deleteTicket = async (ticketId: string) => {
+    if (!window.confirm('Are you sure you want to delete this ticket?')) {
+      return; // Cancel deletion if user does not confirm
+    }
+
     const { error } = await supabase
       .from('customer_service')
       .delete()
@@ -72,7 +77,6 @@ export default function Dashboard() {
       console.error('Error deleting ticket:', error.message);
       alert('Failed to delete ticket.');
     } else {
-      // Update local state after successful deletion
       setTickets(tickets.filter((ticket) => ticket.id !== ticketId));
       alert('Ticket deleted successfully.');
     }
