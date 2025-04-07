@@ -7,17 +7,31 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
+  // Function to log out and clear authentication
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    localStorage.removeItem('authenticated');
+    navigate('/login');
+  };
 
-      const user = session?.user;
+  // Check for session and fetch tickets
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      const user = data.session?.user;
       const allowedEmail = 'nammus2008@gmail.com';
 
-      if (user?.email === allowedEmail || session) {
-        fetchTickets();
+      if (user) {
+        // If you want to allow multiple team emails,
+        // you can check against an array from environment variables.
+        if (user.email === allowedEmail) {
+          localStorage.setItem('authenticated', 'true');
+          fetchTickets();
+        } else {
+          // For unauthorized email
+          await supabase.auth.signOut();
+          navigate('/login');
+        }
       } else {
         navigate('/login');
       }
@@ -34,13 +48,17 @@ export default function Dashboard() {
       setLoading(false);
     };
 
-    checkAuth();
+    checkSession();
   }, [navigate]);
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate('/login');
-  };
+  // Auto logout after 3 hours (10,800,000 ms)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      handleLogout();
+    }, 10800000); // 3 hours in milliseconds
+
+    return () => clearTimeout(timer); // cleanup timer on unmount
+  }, [navigate]);
 
   return (
     <div className="p-6 max-w-3xl mx-auto">
