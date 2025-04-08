@@ -30,11 +30,11 @@ export default function SupportForm() {
 
       if (error) throw error;
 
-      setModalMessage('✅ Success! Your request has been submitted.');
+      setModalMessage('Your Request Has Been Submitted, Our Team Will Contact You Soon!');
       setShowModal(true);
       setFormData({ name: '', email: '', subject: '', message: '' });
     } catch (err) {
-      setModalMessage(err instanceof Error ? err.message : 'Failed to submit form');
+      setModalMessage(err instanceof Error ? err.message : 'Failed To Submit Form');
       setShowModal(true);
     } finally {
       setLoading(false);
@@ -57,10 +57,10 @@ export default function SupportForm() {
   }) => (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50">
       <div className="bg-white p-6 rounded shadow-lg max-w-sm w-full text-black">
-        <p className="text-lg">{message}</p>
+        <p className="text-lg font-brandonBold uppercase">{message}</p>
         <button
           onClick={onClose}
-          className="mt-4 w-full bg-blue-600 text-white py-2 rounded"
+          className="mt-4 w-full bg-primary hover:bg-gray-700 text-white py-2 rounded-full"
         >
           Close
         </button>

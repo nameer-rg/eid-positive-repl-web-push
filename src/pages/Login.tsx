@@ -97,7 +97,7 @@ export default function Login() {
       <div className="min-h-screen bg-black flex items-center justify-center p-4">
         <div className="w-full max-w-md bg-black rounded-lg shadow-xl">
           <div className="p-8 space-y-6">
-            <h1 className="text-2xl font-bold text-white text-center">Admin Login</h1>
+            <h1 className="text-5xl text-white text-center font-alternate uppercase tracking-wide">Admin Login</h1>
             <form onSubmit={handleLogin} className="space-y-4">
               <input
                 type="email"
@@ -109,9 +109,9 @@ export default function Login() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 rounded-full text-white font-medium transition-colors disabled:opacity-50"
+                className="w-full py-2 px-4 bg-primary hover:bg-gray-700 rounded-full text-white font-primary transition-colors disabled:opacity-50"
               >
-                {loading ? "Sending link..." : "Confirm Email"}
+                {loading ? "Authenticating..." : "Confirm Email"}
               </button>
             </form>
           </div>
