@@ -9,11 +9,21 @@ const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     const validateSession = async () => {
+      // 🔄 Listen for auth state changes (critical!)
+      const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+        const isAuth = session?.user && localStorage.getItem("authenticated") === "true";
+        setIsValidSession(!!isAuth);
+        setLoading(false);
+      });
+
+      // Initial check
       const { data: { session } } = await supabase.auth.getSession();
-      const isAuth = session?.user && localStorage.getItem("authenticated") === "true";
-      setIsValidSession(!!isAuth);
+      setIsValidSession(!!(session?.user && localStorage.getItem("authenticated") === "true"));
       setLoading(false);
+
+      return () => subscription?.unsubscribe();
     };
+
     validateSession();
   }, []);
 
