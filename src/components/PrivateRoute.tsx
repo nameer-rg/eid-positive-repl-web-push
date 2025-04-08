@@ -9,25 +9,30 @@ const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     const validateSession = async () => {
-      // 🔄 Listen for auth state changes (critical!)
-      const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-        const isAuth = session?.user && localStorage.getItem("authenticated") === "true";
-        setIsValidSession(!!isAuth);
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        const storedAuth = localStorage.getItem("authenticated") === "true";
+        const userEmail = session?.user?.email?.toLowerCase().trim();
+        const allowedEmails = import.meta.env.VITE_ALLOWED_EMAILS?.split(',') || [];
+
+        setIsValidSession(
+          !!session?.user && 
+          storedAuth && 
+          !!userEmail &&
+          allowedEmails.includes(userEmail)
+        );
+      } catch (error) {
+        console.error("Session check failed:", error);
+        setIsValidSession(false);
+      } finally {
         setLoading(false);
-      });
-
-      // Initial check
-      const { data: { session } } = await supabase.auth.getSession();
-      setIsValidSession(!!(session?.user && localStorage.getItem("authenticated") === "true"));
-      setLoading(false);
-
-      return () => subscription?.unsubscribe();
+      }
     };
 
     validateSession();
   }, []);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div className="p-4 text-center">Loading...</div>;
   return isValidSession ? children : <Navigate to="/login" replace />;
 };
 
