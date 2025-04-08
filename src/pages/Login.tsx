@@ -30,24 +30,27 @@ export default function Login() {
     </div>
   );
 
-  // New useEffect to wait a few hundred milliseconds and check session data
+  // Wait a second to allow Supabase to process the magic link token
   useEffect(() => {
     const handleRedirect = async () => {
-      // Wait 500 ms to allow Supabase to process the token
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      console.log("Window location hash:", window.location.hash);
+      await new Promise((resolve) => setTimeout(resolve, 1000)); // wait 1 second
       const { data, error } = await supabase.auth.getSession();
       console.log("Session data after redirect:", data, error);
       const user = data?.session?.user;
       if (user && allowedEmails.includes(user.email)) {
         localStorage.setItem("authenticated", "true");
         navigate("/dashboard");
+      } else if (window.location.hash.includes("otp_expired")) {
+        setModalMessage("Token expired. Please try logging in again.");
+        setShowModal(true);
       }
     };
 
     handleRedirect();
   }, [navigate, allowedEmails]);
 
-  // Check session on page load (in case the token is processed quickly)
+  // Check session on page load (in case token is processed quickly)
   useEffect(() => {
     const checkSession = async () => {
       const { data } = await supabase.auth.getSession();
@@ -67,7 +70,7 @@ export default function Login() {
     checkSession();
   }, [navigate, allowedEmails]);
 
-  // Handle login: check allowed emails before sending magic link
+  // Handle login: verify allowed email, then send magic link
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -124,9 +127,7 @@ export default function Login() {
           </form>
         </div>
       </div>
-      {showModal && (
-        <Modal message={modalMessage} onClose={() => setShowModal(false)} />
-      )}
+      {showModal && <Modal message={modalMessage} onClose={() => setShowModal(false)} />}
     </FormLayout>
   );
 }
