@@ -37,3 +37,5 @@ const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
 };
 
 export default PrivateRoute;
+
+// final tested and confirmed working code for both files
