@@ -14,11 +14,10 @@ const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
       setIsValidSession(!!isAuth);
       setLoading(false);
     };
-
     validateSession();
   }, []);
 
-  if (loading) return <div>Loading...</div>; // Add a loading state
+  if (loading) return <div>Loading...</div>;
   return isValidSession ? children : <Navigate to="/login" replace />;
 };
 
