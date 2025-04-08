@@ -30,45 +30,45 @@ export default function Login() {
     </div>
   );
 
-  // Combined session handling with retry logic
+  // Critical Fix: Handle OTP/magic link token from URL hash
   useEffect(() => {
-    const handleAuthCheck = async () => {
-      const { data, error } = await supabase.auth.getSession();
+    const handleAuth = async () => {
+      // Extract token from URL hash (e.g., #access_token=...)
+      const hash = window.location.hash.substring(1);
+      const params = new URLSearchParams(hash);
+      const accessToken = params.get('access_token');
+      const refreshToken = params.get('refresh_token');
 
-      if (error) {
-        setModalMessage(`Authentication error: ${error.message}`);
-        setShowModal(true);
-        await supabase.auth.signOut();
-        return;
+      if (accessToken && refreshToken) {
+        // Set the session manually
+        const { error } = await supabase.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken,
+        });
+
+        if (!error) {
+          // Clear the URL hash after processing
+          window.location.hash = '';
+        }
       }
 
-      const user = data?.session?.user;
-      if (user && allowedEmails.includes(user.email)) {
+      // Check session after token handling
+      const { data: { session }, error } = await supabase.auth.getSession();
+
+      if (session?.user && allowedEmails.includes(session.user.email!)) {
         localStorage.setItem("authenticated", "true");
         navigate("/dashboard");
-      } else {
-        if (window.location.hash.includes("otp_expired")) {
-          setModalMessage("Token expired. Please try logging in again.");
-          setShowModal(true);
-        }
+      } else if (error) {
+        setModalMessage(`Error: ${error.message}`);
+        setShowModal(true);
         await supabase.auth.signOut();
-        localStorage.removeItem("authenticated");
       }
     };
 
-    let retries = 0;
-    const attemptAuthCheck = async () => {
-      await handleAuthCheck();
-      if (!localStorage.getItem("authenticated") && retries < 3) {
-        retries++;
-        setTimeout(attemptAuthCheck, 1000);
-      }
-    };
-
-    attemptAuthCheck();
+    handleAuth();
   }, [navigate, allowedEmails]);
 
-  // Handle login: verify allowed email, then send magic link
+  // Handle login
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -94,7 +94,7 @@ export default function Login() {
       setModalMessage(error.message);
       setShowModal(true);
     } else {
-      setModalMessage("Please Check Your Email");
+      setModalMessage("Check your email for the login link!");
       setShowModal(true);
     }
     setLoading(false);
@@ -118,7 +118,7 @@ export default function Login() {
               disabled={loading}
               className="w-full rounded-full text-white py-2 bg-primary hover:bg-gray-700"
             >
-              {loading ? "Confirming..." : "Confirm Email"}
+              {loading ? "Sending link..." : "Confirm Email"}
             </button>
             {error && <p className="text-red-500">{error}</p>}
           </form>
