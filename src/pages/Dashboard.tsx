@@ -42,7 +42,64 @@ export default function Dashboard() {
     setShowLogoutModal(false);
   };
 
-  // Rest of your existing code remains the same until return statement...
+  const fetchTickets = async () => {
+    const { data, error } = await supabase
+      .from('customer_service')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching tickets:', error.message);
+    } else {
+      setTickets(data || []);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      const user = data.session?.user;
+      const allowedEmails =
+        import.meta.env.VITE_ALLOWED_EMAILS?.split(',') || [];
+
+      if (user) {
+        if (allowedEmails.includes(user.email)) {
+          localStorage.setItem('authenticated', 'true');
+          fetchTickets();
+        } else {
+          await supabase.auth.signOut();
+          navigate('/login');
+        }
+      } else {
+        navigate('/login');
+      }
+    };
+
+    checkSession();
+  }, [navigate]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      handleLogout();
+    }, 10800000); // 3 hours
+    return () => clearTimeout(timer);
+  }, [navigate]);
+
+  const deleteTicket = async (ticketId: string) => {
+    const { error } = await supabase
+      .from('customer_service')
+      .delete()
+      .eq('id', ticketId);
+    if (error) {
+      console.error('Error deleting ticket:', error.message);
+      setError('Failed to delete ticket.');
+    } else {
+      setTickets(tickets.filter((ticket) => ticket.id !== ticketId));
+      setError('');
+    }
+    setTicketToDelete(null);
+  };
 
   return (
     <FormLayout>
@@ -57,9 +114,31 @@ export default function Dashboard() {
           </button>
         </div>
 
-        {/* Existing content remains the same */}
+        {loading ? (
+          <p>Loading...</p>
+        ) : tickets.length === 0 ? (
+          <p>No tickets found.</p>
+        ) : (
+          <ul className="space-y-6">
+            {tickets.map((ticket) => (
+              <li key={ticket.id} className="space-y-2">
+                <div className="p-4 border rounded bg-white shadow-sm text-black">
+                  <p><strong>Name:</strong> {ticket.name}</p>
+                  <p><strong>Email:</strong> {ticket.email}</p>
+                  <p><strong>Subject:</strong> {ticket.subject}</p>
+                  <p><strong>Message:</strong> {ticket.message}</p>
+                </div>
+                <button
+                  onClick={() => setTicketToDelete(ticket.id)}
+                  className="bg-red-500 text-white px-3 py-1 rounded"
+                >
+                  Delete
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
 
-        {/* Delete Ticket Modal */}
         {ticketToDelete && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
             <div className="bg-white p-6 rounded shadow-lg max-w-sm w-full">
@@ -84,7 +163,6 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* Logout Confirmation Modal */}
         {showLogoutModal && <LogoutModal />}
       </div>
     </FormLayout>
