@@ -104,7 +104,7 @@ export default function Dashboard() {
           <h1 className="text-6xl text-white font-alternate">Support Tickets</h1>
           <button
             onClick={() => setShowLogoutModal(true)}
-            className="bg-primary text-white px-4 py-1 rounded hover:bg-gray-700 font-brandonBold uppercase transition-colors"
+            className="bg-primary text-white px-3 py-1 rounded hover:bg-gray-700 gap-1 font-brandonBold uppercase transition-colors"
           >
             <LogOut className="h-5 w-5" /> Logout
           </button>
@@ -126,7 +126,7 @@ export default function Dashboard() {
                 </div>
                 <button
                   onClick={() => setTicketToDelete(ticket.id)}
-                  className="bg-red-500 hover:bg-red-900 text-white px-3 py-1 rounded flex items-center gap-1"
+                  className="bg-red-500 hover:bg-red-700 text-white px-3 py-1 rounded flex items-center gap-1 font-brandonBold uppercase"
                 >
                   <X className="h-4 w-4" /> Delete
                 </button>
