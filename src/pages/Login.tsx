@@ -30,44 +30,42 @@ export default function Login() {
     </div>
   );
 
-  // Wait a second to allow Supabase to process the magic link token
+  // Combined session handling with retry logic
   useEffect(() => {
-    const handleRedirect = async () => {
-      console.log("Window location hash:", window.location.hash);
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // wait 1 second
+    const handleAuthCheck = async () => {
       const { data, error } = await supabase.auth.getSession();
-      console.log("Session data after redirect:", data, error);
+
+      if (error) {
+        setModalMessage(`Authentication error: ${error.message}`);
+        setShowModal(true);
+        await supabase.auth.signOut();
+        return;
+      }
+
       const user = data?.session?.user;
       if (user && allowedEmails.includes(user.email)) {
         localStorage.setItem("authenticated", "true");
         navigate("/dashboard");
-      } else if (window.location.hash.includes("otp_expired")) {
-        setModalMessage("Token expired. Please try logging in again.");
-        setShowModal(true);
-      }
-    };
-
-    handleRedirect();
-  }, [navigate, allowedEmails]);
-
-  // Check session on page load (in case token is processed quickly)
-  useEffect(() => {
-    const checkSession = async () => {
-      const { data } = await supabase.auth.getSession();
-      const user = data?.session?.user;
-      if (user) {
-        if (allowedEmails.includes(user.email)) {
-          localStorage.setItem("authenticated", "true");
-          navigate("/dashboard");
-        } else {
-          setModalMessage("This Email is Not Authorized.");
+      } else {
+        if (window.location.hash.includes("otp_expired")) {
+          setModalMessage("Token expired. Please try logging in again.");
           setShowModal(true);
-          await supabase.auth.signOut();
         }
+        await supabase.auth.signOut();
+        localStorage.removeItem("authenticated");
       }
     };
 
-    checkSession();
+    let retries = 0;
+    const attemptAuthCheck = async () => {
+      await handleAuthCheck();
+      if (!localStorage.getItem("authenticated") && retries < 3) {
+        retries++;
+        setTimeout(attemptAuthCheck, 1000);
+      }
+    };
+
+    attemptAuthCheck();
   }, [navigate, allowedEmails]);
 
   // Handle login: verify allowed email, then send magic link
@@ -87,7 +85,7 @@ export default function Login() {
     const { error } = await supabase.auth.signInWithOtp({
       email: normalizedEmail,
       options: {
-        emailRedirectTo: "https://positive-travel-and-holidays.vercel.app/dashboard",
+        emailRedirectTo: `${window.location.origin}/dashboard`,
       },
     });
 
@@ -104,7 +102,6 @@ export default function Login() {
 
   return (
     <FormLayout>
-      {/* Wrap content in a full-black container */}
       <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="mt-24 p-6 max-w-md w-full bg-black text-white rounded shadow-md">
           <h1 className="text-xl font-brandonBold uppercase mb-4">Admin Login</h1>
