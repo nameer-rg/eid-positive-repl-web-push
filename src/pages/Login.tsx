@@ -1,3 +1,4 @@
+// src/pages/Login.tsx
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import { useNavigate } from 'react-router-dom';
@@ -29,25 +30,37 @@ export default function Login() {
     </div>
   );
 
-  // Check session on page load (after magic link redirect)
+  // New useEffect to wait a few hundred milliseconds and check session data
+  useEffect(() => {
+    const handleRedirect = async () => {
+      // Wait 500 ms to allow Supabase to process the token
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      const { data, error } = await supabase.auth.getSession();
+      console.log("Session data after redirect:", data, error);
+      const user = data?.session?.user;
+      if (user && allowedEmails.includes(user.email)) {
+        localStorage.setItem("authenticated", "true");
+        navigate("/dashboard");
+      }
+    };
+
+    handleRedirect();
+  }, [navigate, allowedEmails]);
+
+  // Check session on page load (in case the token is processed quickly)
   useEffect(() => {
     const checkSession = async () => {
-      const { data, error } = await supabase.auth.getSession();
-      console.log("Session data:", data, error);  // Log session data
+      const { data } = await supabase.auth.getSession();
       const user = data?.session?.user;
-
       if (user) {
-        console.log("User is signed in:", user);
         if (allowedEmails.includes(user.email)) {
-          localStorage.setItem('authenticated', 'true');
-          navigate('/dashboard');
+          localStorage.setItem("authenticated", "true");
+          navigate("/dashboard");
         } else {
-          setModalMessage('This Email is Not Authorized.');
+          setModalMessage("This Email is Not Authorized.");
           setShowModal(true);
           await supabase.auth.signOut();
         }
-      } else {
-        console.log("No active session found.");
       }
     };
 
@@ -62,7 +75,7 @@ export default function Login() {
 
     const normalizedEmail = email.trim().toLowerCase();
     if (!allowedEmails.includes(normalizedEmail)) {
-      setModalMessage('This email is not authorized.');
+      setModalMessage("This email is not authorized.");
       setShowModal(true);
       setLoading(false);
       return;
@@ -71,7 +84,7 @@ export default function Login() {
     const { error } = await supabase.auth.signInWithOtp({
       email: normalizedEmail,
       options: {
-        emailRedirectTo: 'https://positive-travel-and-holidays.vercel.app/dashboard',
+        emailRedirectTo: "https://positive-travel-and-holidays.vercel.app/dashboard",
       },
     });
 
@@ -80,10 +93,9 @@ export default function Login() {
       setModalMessage(error.message);
       setShowModal(true);
     } else {
-      setModalMessage('Please Check Your Email');
+      setModalMessage("Please Check Your Email");
       setShowModal(true);
     }
-
     setLoading(false);
   };
 
@@ -106,7 +118,7 @@ export default function Login() {
               disabled={loading}
               className="w-full rounded-full text-white py-2 bg-primary hover:bg-gray-700"
             >
-              {loading ? 'Confirming...' : 'Confirm Email'}
+              {loading ? "Confirming..." : "Confirm Email"}
             </button>
             {error && <p className="text-red-500">{error}</p>}
           </form>
@@ -118,5 +130,3 @@ export default function Login() {
     </FormLayout>
   );
 }
-
-//console log
