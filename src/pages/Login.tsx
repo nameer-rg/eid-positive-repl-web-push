@@ -21,7 +21,7 @@ export default function Login() {
         <p className="text-lg font-brandonBold uppercase">{message}</p>
         <button
           onClick={onClose}
-          className="mt-4 w-full bg-primary rounded-full text-white py-2 rounded"
+          className="mt-4 w-full bg-primary rounded-full text-white py-2"
         >
           Close
         </button>
@@ -32,10 +32,12 @@ export default function Login() {
   // Check session on page load (after magic link redirect)
   useEffect(() => {
     const checkSession = async () => {
-      const { data } = await supabase.auth.getSession();
-      const user = data.session?.user;
+      const { data, error } = await supabase.auth.getSession();
+      console.log("Session data:", data, error);  // Log session data
+      const user = data?.session?.user;
 
       if (user) {
+        console.log("User is signed in:", user);
         if (allowedEmails.includes(user.email)) {
           localStorage.setItem('authenticated', 'true');
           navigate('/dashboard');
@@ -44,6 +46,8 @@ export default function Login() {
           setShowModal(true);
           await supabase.auth.signOut();
         }
+      } else {
+        console.log("No active session found.");
       }
     };
 
@@ -114,3 +118,5 @@ export default function Login() {
     </FormLayout>
   );
 }
+
+//console log
