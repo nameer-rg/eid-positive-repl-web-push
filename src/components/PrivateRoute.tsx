@@ -1,17 +1,25 @@
 // src/components/PrivateRoute.tsx
+import { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
 
 const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
-  const isAuth = localStorage.getItem('authenticated') === 'true';
+  const [isValidSession, setIsValidSession] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  // Additional check to prevent stale localStorage state
-  const validateSession = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    return !!session;
-  };
+  useEffect(() => {
+    const validateSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      const isAuth = session?.user && localStorage.getItem("authenticated") === "true";
+      setIsValidSession(!!isAuth);
+      setLoading(false);
+    };
 
-  return isAuth && validateSession() ? children : <Navigate to="/login" />;
+    validateSession();
+  }, []);
+
+  if (loading) return <div>Loading...</div>; // Add a loading state
+  return isValidSession ? children : <Navigate to="/login" replace />;
 };
 
 export default PrivateRoute;
