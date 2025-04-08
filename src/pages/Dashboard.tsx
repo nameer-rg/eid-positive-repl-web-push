@@ -104,7 +104,7 @@ export default function Dashboard() {
           <h1 className="text-6xl text-white font-alternate">Support Tickets</h1>
           <button
             onClick={() => setShowLogoutModal(true)}
-            className="bg-primary text-white px-4 py-2 rounded flex items-center gap-2 hover:bg-gray-700 font-brandonBold uppercase"
+            className="bg-primary text-white px-3 py-1 rounded flex items-center gap-1 hover:bg-gray-700 font-brandonBold uppercase"
           >
             <LogOut className="h-5 w-5 inline-block align-middle" /> 
             <span className="inline-block align-middle">Logout</span>
@@ -129,7 +129,8 @@ export default function Dashboard() {
                   onClick={() => setTicketToDelete(ticket.id)}
                   className="bg-red-500 hover:bg-red-700 text-white px-3 py-1 rounded flex items-center gap-1 font-brandonBold uppercase"
                 >
-                  <X className="h-5 w-5" /> Delete
+                  <X className="h-5 w-5 inline-block align-middle" />
+                  <span className="inline-block align-middle">Delete</span>
                 </button>
               </li>
             ))}
