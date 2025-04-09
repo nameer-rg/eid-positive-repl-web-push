@@ -63,24 +63,51 @@ export default function Dashboard() {
       const user = data.session?.user;
       const allowedEmails = import.meta.env.VITE_ALLOWED_EMAILS?.split(',') || [];
 
-      if (user && allowedEmails.includes(user.email)) {
-        localStorage.setItem('authenticated', 'true');
-        fetchTickets();
-      } else {
+      if (!user || !allowedEmails.includes(user.email)) {
         await supabase.auth.signOut();
+        localStorage.removeItem('authenticated');
         navigate('/login');
+        return;
       }
+
+      localStorage.setItem('authenticated', 'true');
+      fetchTickets();
     };
 
     checkSession();
   }, [navigate]);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      handleLogout();
-    }, 10800000); // 3 hours
-    return () => clearTimeout(timer);
+    let timer: NodeJS.Timeout;
+
+    const setupTimer = () => {
+      // Set timer for 2 minutes (120000ms) for testing
+      timer = setTimeout(() => {
+        handleLogout();
+      }, 120000); // Change this to 10800000 for 3 hours (production)
+    };
+
+    // Reset timer on any user activity
+    const resetTimer = () => {
+      clearTimeout(timer);
+      setupTimer();
+    };
+
+    // Event listeners for user activity
+    window.addEventListener('mousemove', resetTimer);
+    window.addEventListener('keypress', resetTimer);
+
+    setupTimer(); // Initial timer setup
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('mousemove', resetTimer);
+      window.removeEventListener('keypress', resetTimer);
+    };
   }, [navigate]);
+
+  // Rest of the code remains the same...
+  // Keep the deleteTicket function and return JSX as original
 
   const deleteTicket = async (ticketId: string) => {
     const { error } = await supabase
