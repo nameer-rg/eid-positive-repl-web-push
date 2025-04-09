@@ -20,7 +20,7 @@ export default function SupportForm() {
   const [loading, setLoading] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
   const [showModal, setShowModal] = useState(false);
-  const [showForm, setShowForm] = useState(false); // New state for form visibility
+  const [showForm, setShowForm] = useState(false);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -49,13 +49,7 @@ export default function SupportForm() {
     });
   };
 
-  const Modal = ({
-    message,
-    onClose,
-  }: {
-    message: string;
-    onClose: () => void;
-  }) => (
+  const Modal = ({ message, onClose }: { message: string; onClose: () => void }) => (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50">
       <div className="bg-white p-6 rounded shadow-lg max-w-sm w-full text-black">
         <p className="text-lg font-brandonBold uppercase">{message}</p>
@@ -71,96 +65,120 @@ export default function SupportForm() {
 
   return (
     <FormLayout>
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        {!showForm ? (
-          // Landing Page Content
-          <div className="text-center space-y-8">
-            <h1 className="text-4xl font-alternate text-white mb-4">
+      <div className="min-h-screen bg-black relative flex flex-col">
+        {/* Header Section - shown only when form is hidden */}
+        {!showForm && (
+          <div className="absolute top-40 w-full px-4 text-center z-50">
+            <h1 className="font-alternate text-white text-6xl sm:text-5xl inline-block whitespace-nowrap">
               Customer Support
             </h1>
-            <p className="text-xl text-gray-300 mb-8">
-              Fill a form and reach out to us
+            <p className="mt-6 text-xl text-gray-300 max-w-md mx-auto leading-relaxed">
+              Reach out to our dedicated support team for personalized assistance
             </p>
-            <button
-              onClick={() => setShowForm(true)}
-              className="bg-primary hover:bg-gray-700 text-white px-8 py-3 rounded-full text-lg font-brandonBold uppercase transition-colors"
-            >
-              Fill a Form
-            </button>
+          </div>
+        )}
+
+        {!showForm ? (
+          // Landing Page Content
+          <div className="flex-grow flex items-center justify-center">
+            <div className="text-center">
+              <button
+                onClick={() => setShowForm(true)}
+                className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-primary hover:bg-gray-700 text-white px-4 py-4 rounded-full text-lg font-brandonBold uppercase transition-colors mt-20"
+              >
+                Fill Support Form
+              </button>
+            </div>
           </div>
         ) : (
           // Form Content
-          <div className="mt-24 p-6 max-w-md w-full bg-black text-white rounded shadow-md">
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-sm font-brandonBold uppercase mb-1">
-                  Name
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    placeholder="Enter Your Name"
-                    className="w-full p-2 border rounded mt-1 text-black placeholder:font-sans"
-                    required
-                  />
-                </label>
+          <div className="flex-grow flex items-center justify-center px-4">
+            <div className="max-w-md w-full">
+              <div className="text-center mb-4">
+                <h2 className="text-3xl font-alternate text-white mb-6 mt-10">
+                  Support Request Form
+                </h2>
+                <p className="text-gray-300">
+                  Please fill in the details below and our team will respond within 24 hours
+                </p>
               </div>
-              <div>
-                <label className="block text-sm font-brandonBold uppercase mb-1">
-                  Email
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    placeholder="Enter Your Email Address"
-                    className="w-full p-2 border rounded mt-1 text-black placeholder:font-sans"
-                    required
-                  />
-                </label>
-              </div>
-              <div>
-                <label className="block text-sm font-brandonBold uppercase mb-1">
-                  Subject
-                  <input
-                    type="text"
-                    name="subject"
-                    value={formData.subject}
-                    onChange={handleChange}
-                    placeholder="Enter Your Subject of Issue"
-                    className="w-full p-2 border rounded mt-1 text-black placeholder:font-sans"
-                    required
-                  />
-                </label>
-              </div>
-              <div>
-                <label className="block text-sm font-brandonBold uppercase mb-1">
-                  Message
-                  <textarea
-                    name="message"
-                    value={formData.message}
-                    onChange={handleChange}
-                    placeholder="Enter Your Issue"
-                    className="w-full p-2 border rounded mt-1 h-32 text-black placeholder:font-sans"
-                    required
-                  />
-                </label>
-              </div>
-              <button
-                type="submit"
-                disabled={loading}
-                className={`w-full py-2 px-4 rounded-full text-white ${
-                  loading ? 'bg-gray-400' : 'bg-primary hover:bg-gray-700'
-                }`}
-              >
-                {loading ? 'Submitting...' : 'Submit Request'}
-              </button>
-            </form>
+
+              <form onSubmit={handleSubmit} className="space-y-4 bg-black p-6 rounded shadow-md">
+                <div>
+                  <label className="block text-sm font-brandonBold uppercase mb-1 text-white">
+                    Name
+                    <input
+                      type="text"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      placeholder="Enter Your Full Name"
+                      className="w-full p-2 border rounded mt-1 text-black placeholder:font-sans"
+                      required
+                    />
+                  </label>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-brandonBold uppercase mb-1 text-white">
+                    Email
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      placeholder="Enter Your Email Address"
+                      className="w-full p-2 border rounded mt-1 text-black placeholder:font-sans"
+                      required
+                    />
+                  </label>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-brandonBold uppercase mb-1 text-white">
+                    Subject
+                    <input
+                      type="text"
+                      name="subject"
+                      value={formData.subject}
+                      onChange={handleChange}
+                      placeholder="Enter Your Subject of Issue"
+                      className="w-full p-2 border rounded mt-1 text-black placeholder:font-sans"
+                      required
+                    />
+                  </label>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-brandonBold uppercase mb-1 text-white">
+                    Message
+                    <textarea
+                      name="message"
+                      value={formData.message}
+                      onChange={handleChange}
+                      placeholder="Enter Your Issue"
+                      className="w-full p-2 border rounded mt-1 h-32 text-black placeholder:font-sans"
+                      required
+                    />
+                  </label>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className={`w-full py-2 px-4 rounded-full text-white ${
+                    loading ? 'bg-gray-400' : 'bg-primary hover:bg-gray-700'
+                  }`}
+                >
+                  {loading ? 'Submitting...' : 'Submit Request'}
+                </button>
+              </form>
+            </div>
           </div>
         )}
+
+        {showModal && <Modal message={modalMessage} onClose={() => setShowModal(false)} />}
       </div>
-      {showModal && <Modal message={modalMessage} onClose={() => setShowModal(false)} />}
     </FormLayout>
   );
 }
