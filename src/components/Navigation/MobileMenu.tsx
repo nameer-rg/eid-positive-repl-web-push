@@ -52,10 +52,11 @@ export const MobileMenu = ({ isMenuOpen, setIsMenuOpen }: MobileMenuProps) => {
 
   const menuItems = [
     { label: 'Home', path: '/', icon: Home },
-    { label: 'About', path: '#about', icon: User },
     { label: 'Services', path: '#services', icon: Settings },
-    { label: 'Our Vision', path: '#vision', icon: Target },
-    { label: 'Destinations', path: '#destinations', icon: MapPin }
+    { label: 'Destinations', path: '#destinations', icon: MapPin },
+    { label: 'About US', path: '#about', icon: User }
+    
+    
     // Removed Contact option as requested
   ];
 

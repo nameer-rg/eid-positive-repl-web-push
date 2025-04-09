@@ -17,23 +17,38 @@ const HeroContent = ({ scrollToSection }: HeroContentProps) => {
           className="space-y-8"
         >
           <h1 className="text-5xl md:text-7xl font-bold text-white max-w-5xl mx-auto leading-tight tracking-tight">
-            Experience the World with Positive Travel and Holidays
+           Experience the World with Positive Travel and Holidays
           </h1>
-          
+
           <p className="text-2xl md:text-4xl text-white/90 max-w-3xl mx-auto font-light tracking-wide">
             Your Gateway to Extraordinary Adventures
           </p>
-          
-          <motion.button 
-            onClick={() => scrollToSection('services')}
-            className="mt-8 px-8 py-4 bg-primary text-white rounded-full font-medium flex items-center gap-2 mx-auto hover:bg-primary/90 transition-colors text-lg"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            Start Your Journey
-            <ChevronRight className="w-6 h-6" />
-          </motion.button>
+
+          {/* Button Group */}
+          <div className="flex flex-col md:flex-row items-center justify-center gap-4">
+            <motion.button 
+              onClick={() => scrollToSection('introduction')}
+              className="px-8 py-4 bg-primary text-white rounded-full border-2 border-primary font-medium flex items-center gap-2 hover:bg-transparent transition-colors text-lg"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Start Your Journey
+              <ChevronRight className="w-6 h-6" />
+            </motion.button>
+
+            <motion.a
+              href="https://wa.me/917593946666"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-[5.25rem] py-4 border-2 border-white text-white rounded-full font-medium flex items-center gap-2 hover:bg-primary/90 hover:border-primary/90 transition-colors text-lg"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              WhatsApp
+            </motion.a>
+          </div>
         </motion.div>
+
       </div>
     </div>
   );

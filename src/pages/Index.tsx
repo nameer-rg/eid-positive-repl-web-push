@@ -9,6 +9,7 @@ import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
 import LoadingScreen from "@/components/LoadingScreen";
 import PartnersSection from "@/components/PartnersSection";
+import IntroductionSection from "@/components/IntroductionSection"
 
 const Index = () => {
   return (
@@ -16,6 +17,7 @@ const Index = () => {
       <LoadingScreen />
       <main className="min-h-screen bg-white">
         <HeroSection />
+        <IntroductionSection />
         <ServicesSection />
         <DestinationsSection />
         <VisionSection />

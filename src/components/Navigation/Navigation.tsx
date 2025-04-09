@@ -78,9 +78,9 @@ export const Navigation = ({ isMenuOpen, setIsMenuOpen }: NavigationProps) => {
 
           <div className="hidden md:flex items-center space-x-12 py-2 justify-start">
             <Link to="/" className="text-white hover:text-white/80 transition-colors">Home</Link>
-            <button onClick={() => scrollToSection('about')} className="text-white hover:text-white/80 transition-colors">About Us</button>
             <button onClick={() => scrollToSection('services')} className="text-white hover:text-white/80 transition-colors">Services</button>
             <button onClick={() => scrollToSection('destinations')} className="text-white hover:text-white/80 transition-colors">Destinations</button>
+            <button onClick={() => scrollToSection('about')} className="text-white hover:text-white/80 transition-colors">About Us</button>          
             <Link to="/contact" className="text-white hover:text-white/80 transition-colors">Contact Us</Link>
           </div>
         </div>
