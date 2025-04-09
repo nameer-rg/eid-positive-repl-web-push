@@ -84,7 +84,7 @@ export default function Dashboard() {
       // Set timer for 2 minutes (120000ms) for testing
       timer = setTimeout(() => {
         handleLogout();
-      }, 120000); // Change this to 10800000 for 3 hours (production)
+      }, 10800000); // Change this to 10800000 for 3 hours (production)
     };
 
     // Reset timer on any user activity
