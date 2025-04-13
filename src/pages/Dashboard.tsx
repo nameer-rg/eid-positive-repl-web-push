@@ -69,7 +69,6 @@ export default function Dashboard() {
         navigate('/login');
         return;
       }
-
       localStorage.setItem('authenticated', 'true');
       fetchTickets();
     };
@@ -81,23 +80,20 @@ export default function Dashboard() {
     let timer: NodeJS.Timeout;
 
     const setupTimer = () => {
-      // Set timer for 2 minutes (120000ms) for testing
       timer = setTimeout(() => {
         handleLogout();
-      }, 10800000); // Change this to 10800000 for 3 hours (production)
+      }, 10800000); // 3 hours (change for production)
     };
 
-    // Reset timer on any user activity
     const resetTimer = () => {
       clearTimeout(timer);
       setupTimer();
     };
 
-    // Event listeners for user activity
     window.addEventListener('mousemove', resetTimer);
     window.addEventListener('keypress', resetTimer);
 
-    setupTimer(); // Initial timer setup
+    setupTimer();
 
     return () => {
       clearTimeout(timer);
@@ -105,9 +101,6 @@ export default function Dashboard() {
       window.removeEventListener('keypress', resetTimer);
     };
   }, [navigate]);
-
-  // Rest of the code remains the same...
-  // Keep the deleteTicket function and return JSX as original
 
   const deleteTicket = async (ticketId: string) => {
     const { error } = await supabase
@@ -133,7 +126,7 @@ export default function Dashboard() {
             onClick={() => setShowLogoutModal(true)}
             className="bg-primary text-white px-3 py-1 rounded flex items-center gap-1 hover:bg-gray-700 font-brandonBold uppercase"
           >
-            <LogOut className="h-5 w-5 inline-block align-middle" /> 
+            <LogOut className="h-5 w-5 inline-block align-middle" />
             <span className="inline-block align-middle">Logout</span>
           </button>
         </div>
@@ -150,8 +143,9 @@ export default function Dashboard() {
                   <p><strong>Name:</strong> {ticket.name}</p>
                   <p><strong>Email:</strong> {ticket.email}</p>
                   <p><strong>Subject:</strong> {ticket.subject}</p>
-                  <p><strong>Message:</strong> {ticket.message}</p>
+                  <p className="break-words whitespace-pre-wrap"><strong>Message:</strong> {ticket.message}</p>
                 </div>
+                {/* Delete button placed outside the ticket card */}
                 <button
                   onClick={() => setTicketToDelete(ticket.id)}
                   className="bg-red-500 hover:bg-red-700 text-white px-3 py-1 rounded flex items-center gap-1 font-brandonBold uppercase"

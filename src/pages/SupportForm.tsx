@@ -1,4 +1,3 @@
-// src/components/SupportForm.tsx
 import { useState, ChangeEvent, FormEvent } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import FormLayout from '@/components/layouts/FormLayout';
@@ -22,6 +21,8 @@ export default function SupportForm() {
   const [showModal, setShowModal] = useState(false);
   const [showForm, setShowForm] = useState(false);
 
+  const wordLimit = 100; // Set maximum number of words
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -43,10 +44,13 @@ export default function SupportForm() {
   };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+    // If it's the message field, limit the word count.
+    if (name === 'message') {
+      const words = value.trim().split(/\s+/);
+      if (words.length > wordLimit) return; // Prevent update if limit exceeded.
+    }
+    setFormData({ ...formData, [name]: value });
   };
 
   const Modal = ({ message, onClose }: { message: string; onClose: () => void }) => (
@@ -156,11 +160,14 @@ export default function SupportForm() {
                       name="message"
                       value={formData.message}
                       onChange={handleChange}
-                      placeholder="Enter Your Issue"
+                      placeholder="Enter Your Issue (Max 100 words)"
                       className="w-full p-2 border rounded mt-1 h-32 text-black placeholder:font-sans"
                       required
                     />
                   </label>
+                  <p className="mt-1 text-right text-sm text-white">
+                    {100 - formData.message.trim().split(/\s+/).filter(word => word !== '').length} words remaining
+                  </p>
                 </div>
 
                 <button
