@@ -28,7 +28,15 @@ export default function SupportForm() {
     setLoading(true);
 
     try {
-      const { error } = await supabase.from('customer_service').insert([formData]);
+      // Get current IST timestamp
+      const now = new Date();
+      const istOffset = 330; // IST is UTC+5:30 (330 minutes)
+      const istTimestamp = new Date(now.getTime() + istOffset * 60000).toISOString();
+
+      const { error } = await supabase.from('customer_service').insert([{
+        ...formData,
+        created_at: istTimestamp
+      }]);
 
       if (error) throw error;
 
@@ -48,7 +56,7 @@ export default function SupportForm() {
     // If it's the message field, limit the word count.
     if (name === 'message') {
       const words = value.trim().split(/\s+/);
-      if (words.length > wordLimit) return; // Prevent update if limit exceeded.
+      if (words.length > wordLimit) return;
     }
     setFormData({ ...formData, [name]: value });
   };
@@ -70,7 +78,6 @@ export default function SupportForm() {
   return (
     <FormLayout>
       <div className="min-h-screen bg-black relative flex flex-col">
-        {/* Header Section - shown only when form is hidden */}
         {!showForm && (
           <div className="absolute top-40 w-full px-4 text-center z-50">
             <h1 className="font-alternate text-white text-6xl sm:text-5xl inline-block whitespace-nowrap">
@@ -83,7 +90,6 @@ export default function SupportForm() {
         )}
 
         {!showForm ? (
-          // Landing Page Content
           <div className="flex-grow flex items-center justify-center">
             <div className="text-center">
               <button
@@ -95,7 +101,6 @@ export default function SupportForm() {
             </div>
           </div>
         ) : (
-          // Form Content
           <div className="flex-grow flex items-center justify-center px-4">
             <div className="max-w-md w-full">
               <div className="text-center mb-4">

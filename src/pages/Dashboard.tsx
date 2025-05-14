@@ -144,6 +144,16 @@ export default function Dashboard() {
                   <p><strong>Email:</strong> {ticket.email}</p>
                   <p><strong>Subject:</strong> {ticket.subject}</p>
                   <p className="break-words whitespace-pre-wrap"><strong>Message:</strong> {ticket.message}</p>
+
+                  {/* Add this new line */}
+                  <p className="text-sm text-gray-500 mt-2">
+                    Submitted at: {new Date(ticket.created_at).toLocaleString('en-IN', {
+                      timeZone: 'Asia/Kolkata',
+                      dateStyle: 'medium',
+                      timeStyle: 'short'
+                    })}
+                  </p>
+                  
                 </div>
                 {/* Delete button placed outside the ticket card */}
                 <button
