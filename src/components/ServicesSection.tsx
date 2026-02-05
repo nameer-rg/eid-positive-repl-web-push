@@ -108,9 +108,9 @@ export default function ServicesSection() {
         <section className="bg-white py-16 mt-20">
           <div className="group p-8 rounded-2xl border bg-card hover:bg-secondary/50 transition-colors container mx-auto flex flex-wrap justify-center gap-12">
             
-            <CounterItem start={0} end={6} title="Years Of Experience" />
+            <CounterItem start={0} end={7} title="Years Of Experience" />
             <CounterItem start={0} end={300} title="Travel Packages" />
-            <CounterItem start={0} end={6000} title="Total Travelers" />
+            <CounterItem start={0} end={8000} title="Total Travelers" />
           </div>
         </section>
       </div>
